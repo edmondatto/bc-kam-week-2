@@ -41,3 +41,11 @@ class TestDojoClass(TestCase):
         self.my_dojo.add_person('John', 'Staff')
         new_people_count = len(self.my_dojo.list_of_people)
         self.assertEqual(new_people_count - initial_people_count, 1, msg='Inaccurate number of people')
+
+    def test_successfully_allocate_living_space(self):
+        self.my_dojo.create_room('penthouse', 'living space')
+        initial_num_of_occupants = len(self.my_dojo.living_spaces['penthouse'].occupants)
+        self.my_dojo.add_person('kimberly', 'fellow', True)
+        new_num_of_occupants = len(self.my_dojo.living_spaces['penthouse'].occupants)
+        self.assertEqual(new_num_of_occupants - initial_num_of_occupants, 1, msg='Inaccurate number of occupants in '
+                                                                                 'room')
