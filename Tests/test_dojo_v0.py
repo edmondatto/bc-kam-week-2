@@ -33,6 +33,9 @@ class TestDojoClass(TestCase):
         new_room_count = self.my_dojo.total_number_of_rooms
         self.assertEqual(new_room_count - initial_room_count, 1, msg='Inaccurate Number of rooms')
 
+    # def test_valid_input_for_create_room(self):
+    #     self.assertRaises(TypeError, self.my_dojo.create_room('Sanctuary', 5))
+
     def test_successfully_add_person(self):
         initial_people_count = len(self.my_dojo.list_of_people)
         self.my_dojo.add_person('John', 'Staff')

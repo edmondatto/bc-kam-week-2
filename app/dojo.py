@@ -18,18 +18,21 @@ class Dojo(object):
         self.total_number_of_people = 0
 
     def create_room(self, room_name, room_type):
-        if room_type.lower().strip() == 'office':
-            new_office = Office(room_name)
-            self.total_number_of_rooms += 1
-            self.number_of_offices += 1
-            return new_office
-        elif room_type.lower().strip() == 'living space':
-            room_name = LivingSpace(room_name)
-            self.total_number_of_rooms += 1
-            self.number_of_living_spaces += 1
-            return room_name
+        if isinstance(room_name, str) and isinstance(room_type, str):
+            if room_type.lower().strip() == 'office':
+                new_office = Office(room_name)
+                self.total_number_of_rooms += 1
+                self.number_of_offices += 1
+                return new_office
+            elif room_type.lower().strip() == 'living space':
+                room_name = LivingSpace(room_name)
+                self.total_number_of_rooms += 1
+                self.number_of_living_spaces += 1
+                return room_name
+            else:
+                return 'Enter a valid room type!'
         else:
-            return 'Enter a valid room type!'
+            raise TypeError('Arguments must both be strings')
 
     def add_person(self, person_name, person_position):
         if person_position.lower().strip() == 'fellow':
