@@ -2,4 +2,5 @@ from app.person import Person
 
 
 class Staff(Person):
-    pass
+    def __init__(self, staff_name):
+        super(Staff, self).__init__(staff_name)

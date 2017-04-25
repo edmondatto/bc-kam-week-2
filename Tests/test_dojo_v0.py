@@ -27,14 +27,14 @@ class TestDojoClass(TestCase):
         self.my_dojo = Dojo()
 
     def test_successfully_create_room(self):
-        initial_room_count = self.my_dojo.number_of_rooms
+        initial_room_count = self.my_dojo.total_number_of_rooms
         sanctuary = self.my_dojo.create_room('Sanctuary', 'office')
         self.assertTrue(sanctuary, msg='Sanctuary room was not created successfully')
-        new_room_count = Dojo.number_of_rooms
-        self.assertEqual(new_room_count - initial_room_count, 1, msg='')
+        new_room_count = self.my_dojo.total_number_of_rooms
+        self.assertEqual(new_room_count - initial_room_count, 1, msg='Inaccurate Number of rooms')
 
     def test_successfully_add_person(self):
-        initial_people_count = len(self.my_dojo.people)
+        initial_people_count = len(self.my_dojo.list_of_people)
         self.my_dojo.add_person('John', 'Staff')
-        new_people_count = len(self.my_dojo.people)
+        new_people_count = len(self.my_dojo.list_of_people)
         self.assertEqual(new_people_count - initial_people_count, 1, msg='Inaccurate number of people')
