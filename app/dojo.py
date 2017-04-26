@@ -25,7 +25,7 @@ class Dojo(object):
         self.total_number_of_people = 0
 
     def create_room(self, room_name, room_type):
-        if isinstance(room_name, str) and isinstance(room_type, str):
+        if type(room_name) == str and type(room_type) == str:
             if room_name in list(self.all_rooms.keys()):
                 return 'A room called {} already exists'.format(room_name)
             else:
