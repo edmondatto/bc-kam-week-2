@@ -1,11 +1,12 @@
 from unittest import TestCase
+
 from app.dojo import Dojo
-from app.person import Person
 from app.fellow import Fellow
-from app.staff import Staff
-from app.room import Room
 from app.living_space import LivingSpace
 from app.office import Office
+from app.person import Person
+from app.room import Room
+from app.staff import Staff
 
 
 class TestClassRelationships(TestCase):
@@ -49,3 +50,30 @@ class TestDojoClass(TestCase):
         new_num_of_occupants = len(self.my_dojo.living_spaces['penthouse'].occupants)
         self.assertEqual(new_num_of_occupants - initial_num_of_occupants, 1, msg='Inaccurate number of occupants in '
                                                                                  'room')
+
+    def test_successfully_allocate_office_space(self):
+        self.my_dojo.create_room('command center', 'office')
+        initial_num_of_occupants = len(self.my_dojo.office_spaces['command center'].occupants)
+        self.my_dojo.add_person('tinky winky', 'fellow')
+        self.my_dojo.add_person('dipsy', ' staff')
+        final_num_of_occupants = len(self.my_dojo.office_spaces['command center'].occupants)
+        new_assignees = final_num_of_occupants - initial_num_of_occupants
+        self.assertEqual(new_assignees, 2, msg='Inaccurate number of occupants. Expected 2!')
+        self.assertEqual(self.my_dojo.office_spaces['command center'].occupants, ['tinky winky', 'dipsy'], msg='{} != '
+                                                                                                               '[\'tinky winky\', \'dipsy\']'.format(
+            self.my_dojo.office_spaces['command center'].occupants))
+
+    def test_successfully_create_multiple_rooms(self):
+        initial_room_count = self.my_dojo.number_of_offices
+        self.my_dojo.create_multiple_rooms('office', 'War room', 'kitchen')
+        final_room_count = self.my_dojo.number_of_offices
+        num_of_new_offices = final_room_count - initial_room_count
+        self.assertEqual(num_of_new_offices, 2, msg='Inaccurate number of offices')
+
+    def test_successfully_add_multiple_people(self):
+        self.my_dojo.create_multiple_rooms('office', 'War room', 'kitchen')
+        initial_staff_count = self.my_dojo.total_number_of_staff
+        self.my_dojo.add_multiple_people('staff', 'Harry', 'Hermione', 'Voldermort')
+        final_staff_count = self.my_dojo.total_number_of_staff
+        num_of_new_staff = final_staff_count - initial_staff_count
+        self.assertEqual(num_of_new_staff, 3, msg='Inaccurate number of new staff')
