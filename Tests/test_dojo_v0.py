@@ -38,6 +38,7 @@ class TestDojoClass(TestCase):
     #     self.assertRaises(TypeError, self.my_dojo.create_room('Sanctuary', 5))
 
     def test_successfully_add_person(self):
+        self.my_dojo.create_room('command center', 'office')
         initial_people_count = len(self.my_dojo.list_of_people)
         self.my_dojo.add_person('John', 'Staff')
         new_people_count = len(self.my_dojo.list_of_people)
@@ -45,6 +46,9 @@ class TestDojoClass(TestCase):
 
     def test_successfully_allocate_living_space(self):
         self.my_dojo.create_room('penthouse', 'living space')
+        self.my_dojo.create_room('command center', 'office')
+        self.assertIn('penthouse', self.my_dojo.living_spaces.keys())
+        self.assertIn('command center', self.my_dojo.office_spaces.keys())
         initial_num_of_occupants = len(self.my_dojo.living_spaces['penthouse'].occupants)
         self.my_dojo.add_person('kimberly', 'fellow', True)
         new_num_of_occupants = len(self.my_dojo.living_spaces['penthouse'].occupants)
@@ -53,6 +57,7 @@ class TestDojoClass(TestCase):
 
     def test_successfully_allocate_office_space(self):
         self.my_dojo.create_room('command center', 'office')
+        self.my_dojo.create_room('cozy space', 'living space')
         initial_num_of_occupants = len(self.my_dojo.office_spaces['command center'].occupants)
         self.my_dojo.add_person('tinky winky', 'fellow')
         self.my_dojo.add_person('dipsy', ' staff')
@@ -77,3 +82,9 @@ class TestDojoClass(TestCase):
         final_staff_count = self.my_dojo.total_number_of_staff
         num_of_new_staff = final_staff_count - initial_staff_count
         self.assertEqual(num_of_new_staff, 3, msg='Inaccurate number of new staff')
+
+    def test_rejects_duplicate_rooms(self):
+        self.my_dojo.create_room('ops center', 'office')
+        self.assertEqual(self.my_dojo.create_room('ops center', 'office'), 'A room called ops center already exists',
+                         msg='Does not detect duplicate room entry')
+        # self.assertEqual(self.my_dojo.create_multiple_rooms('office', 'black hole', 'ops center'), 'A room called ops center already exists', msg='Does not detect duplicate room entry')

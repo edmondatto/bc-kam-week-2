@@ -6,4 +6,3 @@ class Fellow(Person):
         super(Fellow, self).__init__(fellow_name)
         self.position = 'Fellow'
         self.living_space_assigned = ''
-        self.wants_accommodation = wants_accommodation

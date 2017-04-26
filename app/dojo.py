@@ -26,22 +26,25 @@ class Dojo(object):
 
     def create_room(self, room_name, room_type):
         if isinstance(room_name, str) and isinstance(room_type, str):
-            if room_type.lower().strip() == 'office':
-                new_office = Office(room_name)
-                self.total_number_of_rooms += 1
-                self.number_of_offices += 1
-                self.office_spaces[room_name] = new_office
-                self.all_rooms[room_name] = new_office
-                return new_office
-            elif room_type.lower().strip() == 'living space':
-                new_living_space = LivingSpace(room_name)
-                self.total_number_of_rooms += 1
-                self.number_of_living_spaces += 1
-                self.living_spaces[room_name] = new_living_space
-                self.all_rooms[room_name] = new_living_space
-                return new_living_space
+            if room_name in list(self.all_rooms.keys()):
+                return 'A room called {} already exists'.format(room_name)
             else:
-                return 'Enter a valid room type!'
+                if room_type.lower().strip() == 'office':
+                    new_office = Office(room_name)
+                    self.total_number_of_rooms += 1
+                    self.number_of_offices += 1
+                    self.office_spaces[room_name] = new_office
+                    self.all_rooms[room_name] = new_office
+                    return new_office
+                elif room_type.lower().strip() == 'living space':
+                    new_living_space = LivingSpace(room_name)
+                    self.total_number_of_rooms += 1
+                    self.number_of_living_spaces += 1
+                    self.living_spaces[room_name] = new_living_space
+                    self.all_rooms[room_name] = new_living_space
+                    return new_living_space
+                else:
+                    return 'Enter a valid room type!'
         else:
             raise TypeError('Arguments must both be strings')
 
@@ -69,33 +72,6 @@ class Dojo(object):
         else:
             return 'Enter a valid position e.g. Fellow, Staff'
 
-    def allocate_living_space(self, person_name):
-        room_assigned = False
-        while not room_assigned:
-            random_living_space = random.choice(list(self.living_spaces.keys()))
-            if self.living_spaces[random_living_space].capacity == len(
-                    self.living_spaces[random_living_space].occupants):
-                room_assigned = False
-            elif self.living_spaces[random_living_space].capacity > len(
-                    self.living_spaces[random_living_space].occupants):
-                self.living_spaces[random_living_space].occupants.append(person_name)
-                room_assigned = True
-                return '{} has been allocated the livingspace {}'.format(person_name, random_living_space)
-
-    def allocate_office_space(self, person_name):
-        office_assigned = False
-        while not office_assigned:
-            print(self.office_spaces)
-            random_office_space = random.choice(list(self.office_spaces.keys()))
-            if self.office_spaces[random_office_space].capacity == len(
-                    self.office_spaces[random_office_space].occupants):
-                office_assigned = False
-            elif self.office_spaces[random_office_space].capacity > len(
-                    self.office_spaces[random_office_space].occupants):
-                self.office_spaces[random_office_space].occupants.append(person_name)
-                office_assigned = True
-                return '{} has been allocated the Office {}'.format(person_name, random_office_space)
-
     def create_multiple_rooms(self, room_type, *room_names):
         if room_type.lower().strip() == 'office' or room_type.lower().strip() == 'living space':
             for room_name in room_names:
@@ -108,4 +84,41 @@ class Dojo(object):
             for person_name in people_names:
                 print(self.add_person(person_name, position))
         else:
+            print('It runs')
             return 'Enter a valid position e.g. Staff, Fellow'
+
+    def allocate_office_space(self, person_name):
+        rooms_with_space = []
+        if self.office_spaces:
+            for key, value in self.office_spaces.items():
+                if self.office_spaces[key].has_free_space:
+                    rooms_with_space.append(key)
+                    print(rooms_with_space)
+                    random_office_space = random.choice(rooms_with_space)
+                    self.office_spaces[random_office_space].occupants.append(person_name)
+                    self.office_spaces[random_office_space].number_of_occupants += 1
+                    if self.office_spaces[random_office_space].capacity == self.office_spaces[
+                        random_office_space].number_of_occupants:
+                        self.office_spaces[random_office_space].has_free_space = False
+                        return '{} has been allocated the Office {}'.format(person_name, random_office_space)
+        else:
+            print('It runs')
+            return 'There are no rooms of type office spaces!'
+
+    def allocate_living_space(self, person_name):
+        rooms_with_space = []
+        if self.living_spaces:
+            for key, value in self.living_spaces.items():
+                if self.living_spaces[key].has_free_space:
+                    rooms_with_space.append(key)
+                    print(rooms_with_space)
+                    random_living_space = random.choice(rooms_with_space)
+                    self.living_spaces[random_living_space].occupants.append(person_name)
+                    self.living_spaces[random_living_space].number_of_occupants += 1
+                    if self.living_spaces[random_living_space].capacity == self.living_spaces[
+                        random_living_space].number_of_occupants:
+                        self.living_spaces[random_living_space].has_free_space = False
+                        return '{} has been allocated the Office {}'.format(person_name, random_living_space)
+        else:
+            warning = 'There are no rooms of type living spaces!'
+            return warning
