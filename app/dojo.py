@@ -35,14 +35,14 @@ class Dojo(object):
                     self.number_of_offices += 1
                     self.office_spaces[room_name] = new_office
                     self.all_rooms[room_name] = new_office
-                    return new_office
+                    return 'An office called ' + room_name + ' has been successfully created!'
                 elif room_type.lower().strip() == 'living space':
                     new_living_space = LivingSpace(room_name)
                     self.total_number_of_rooms += 1
                     self.number_of_living_spaces += 1
                     self.living_spaces[room_name] = new_living_space
                     self.all_rooms[room_name] = new_living_space
-                    return new_living_space
+                    return 'A living space called ' + room_name + ' has been successfully created!'
                 else:
                     return 'Enter a valid room type!'
         else:
@@ -55,20 +55,22 @@ class Dojo(object):
             self.list_of_fellows.append(person_name)
             self.total_number_of_fellows += 1
             self.total_number_of_people += 1
-            self.allocate_office_space(person_name)
+            office_allocation_msg = self.allocate_office_space(person_name)
+            living_space_allocation_message = ''
             if wants_accommodation:
-                self.allocate_living_space(person_name)
+                living_space_allocation_message = self.allocate_living_space(person_name)
                 # new_fellow.office_assigned =
                 # new_fellow.living_space_assigned =
                 # return new_fellow
+            return 'Fellow ' + person_name + ' has been successfully added.' + office_allocation_msg + '\n' + living_space_allocation_message
         elif person_position.lower().strip() == 'staff':
             new_staff = Staff(person_name)
             self.list_of_people.append(person_name)
             self.list_of_staff.append(person_name)
             self.total_number_of_staff += 1
             self.total_number_of_people += 1
-            self.allocate_office_space(person_name)
-            return new_staff
+            office_allocation_msg = self.allocate_office_space(person_name)
+            return 'Staff ' + person_name + ' has been successfully added.' + '\n' + office_allocation_msg
         else:
             return 'Enter a valid position e.g. Fellow, Staff'
 
@@ -93,16 +95,14 @@ class Dojo(object):
             for key, value in self.office_spaces.items():
                 if self.office_spaces[key].has_free_space:
                     rooms_with_space.append(key)
-                    print(rooms_with_space)
-                    random_office_space = random.choice(rooms_with_space)
-                    self.office_spaces[random_office_space].occupants.append(person_name)
-                    self.office_spaces[random_office_space].number_of_occupants += 1
-                    if self.office_spaces[random_office_space].capacity == self.office_spaces[
-                        random_office_space].number_of_occupants:
-                        self.office_spaces[random_office_space].has_free_space = False
-                        return '{} has been allocated the Office {}'.format(person_name, random_office_space)
+            random_office_space = random.choice(rooms_with_space)
+            self.office_spaces[random_office_space].occupants.append(person_name)
+            self.office_spaces[random_office_space].number_of_occupants += 1
+            if self.office_spaces[random_office_space].capacity == self.office_spaces[
+                random_office_space].number_of_occupants:
+                self.office_spaces[random_office_space].has_free_space = False
+            return '{} has been allocated the Office {}'.format(person_name, random_office_space)
         else:
-            print('It runs')
             return 'There are no rooms of type office spaces!'
 
     def allocate_living_space(self, person_name):
@@ -111,14 +111,13 @@ class Dojo(object):
             for key, value in self.living_spaces.items():
                 if self.living_spaces[key].has_free_space:
                     rooms_with_space.append(key)
-                    print(rooms_with_space)
-                    random_living_space = random.choice(rooms_with_space)
-                    self.living_spaces[random_living_space].occupants.append(person_name)
-                    self.living_spaces[random_living_space].number_of_occupants += 1
-                    if self.living_spaces[random_living_space].capacity == self.living_spaces[
-                        random_living_space].number_of_occupants:
-                        self.living_spaces[random_living_space].has_free_space = False
-                        return '{} has been allocated the Office {}'.format(person_name, random_living_space)
+            random_living_space = random.choice(rooms_with_space)
+            self.living_spaces[random_living_space].occupants.append(person_name)
+            self.living_spaces[random_living_space].number_of_occupants += 1
+            if self.living_spaces[random_living_space].capacity == self.living_spaces[
+                random_living_space].number_of_occupants:
+                self.living_spaces[random_living_space].has_free_space = False
+            return '{} has been allocated the Office {}'.format(person_name, random_living_space)
         else:
             warning = 'There are no rooms of type living spaces!'
             return warning
