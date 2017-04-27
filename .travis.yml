@@ -11,4 +11,4 @@ install: "pip install -r requirements.txt"
 script: pytest Tests/test_dojo_v0.py
 
 after_sucess:
-  - CODECLIMATE_REPO_TOKEN=<d8f81b6bb727a1da52ef6fa9d186eb2113e73f19737c314f8d81538e1f8143a5> codeclimate-test-reporter
+  - CODECLIMATE_REPO_TOKEN=d8f81b6bb727a1da52ef6fa9d186eb2113e73f19737c314f8d81538e1f8143a5 codeclimate-test-reporter
