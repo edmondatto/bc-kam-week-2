@@ -6,9 +6,6 @@ from app.office import Office
 from app.staff import Staff
 
 
-# Optimise the list_of_people
-# Optimise the total_number_of_people
-
 class Dojo(object):
     def __init__(self):
         self.total_number_of_rooms = 0
