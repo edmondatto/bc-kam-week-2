@@ -92,4 +92,10 @@ class TestDojoClass(TestCase):
         self.my_dojo.create_room('ops center', 'office')
         self.assertEqual(self.my_dojo.create_room('ops center', 'office'), 'A room called ops center already exists',
                          msg='Does not detect duplicate room entry')
-        # self.assertEqual(self.my_dojo.create_multiple_rooms('office', 'black hole', 'ops center'), 'A room called ops center already exists', msg='Does not detect duplicate room entry')
+
+    def test_print_room(self):
+        self.my_dojo.create_room('ops center', 'office')
+        self.my_dojo.add_person('Wolverine', 'staff')
+        occupant_list = self.my_dojo.print_room('ops center')
+        self.assertEqual(1, len(occupant_list), msg='Incorrect number of occupants')
+        self.assertEqual(['Wolverine'], occupant_list, msg='Wolverine not in list of occupants')

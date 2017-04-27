@@ -99,15 +99,16 @@ class Dojo(object):
                     rooms_with_space.append(key)
             try:
                 random_office_space = random.choice(rooms_with_space)
+                self.office_spaces[random_office_space].occupants.append(person_name)
+                self.office_spaces[random_office_space].number_of_occupants += 1
+                self.list_of_people[person_name].office_assigned += random_office_space
+                if self.office_spaces[random_office_space].capacity == self.office_spaces[
+                    random_office_space].number_of_occupants:
+                    self.office_spaces[random_office_space].has_free_space = False
+                return '{} has been allocated the Office {}'.format(person_name, random_office_space)
             except IndexError:
                 return 'No offices with free space!'
-            self.office_spaces[random_office_space].occupants.append(person_name)
-            self.office_spaces[random_office_space].number_of_occupants += 1
-            self.list_of_people[person_name].office_space_assigned = random_office_space
-            if self.office_spaces[random_office_space].capacity == self.office_spaces[
-                random_office_space].number_of_occupants:
-                self.office_spaces[random_office_space].has_free_space = False
-            return '{} has been allocated the Office {}'.format(person_name, random_office_space)
+
         else:
             return 'There are no rooms of type office spaces!'
 
@@ -119,22 +120,38 @@ class Dojo(object):
                     rooms_with_space.append(key)
             try:
                 random_living_space = random.choice(rooms_with_space)
+                self.living_spaces[random_living_space].occupants.append(person_name)
+                self.living_spaces[random_living_space].number_of_occupants += 1
+                self.list_of_people[person_name].living_space_assigned += random_living_space
+                if self.living_spaces[random_living_space].capacity == self.living_spaces[
+                    random_living_space].number_of_occupants:
+                    self.living_spaces[random_living_space].has_free_space = False
+                return '{} has been allocated the Living Space {}'.format(person_name, random_living_space)
             except IndexError:
                 return 'No offices with free space!'
-            self.living_spaces[random_living_space].occupants.append(person_name)
-            self.living_spaces[random_living_space].number_of_occupants += 1
-            self.list_of_people[person_name].living_space_assigned = random_living_space
-            if self.living_spaces[random_living_space].capacity == self.living_spaces[
-                random_living_space].number_of_occupants:
-                self.living_spaces[random_living_space].has_free_space = False
-            return '{} has been allocated the Living Space {}'.format(person_name, random_living_space)
-        else:
 
+        else:
+            self.unallocated_people.append(person_name)
             warning = 'There are no rooms of type living spaces!'
             return warning
 
     def print_room(self, room_name):
-        list_of_occupants = self.all_rooms[room_name].occupants
-        for occupant in list_of_occupants:
-            print(occupant)
-            return
+        return self.all_rooms[room_name].occupants
+
+    def print_allocations(self):
+        room_names = list(self.all_rooms.keys())
+        if len(room_names) > 0:
+            for room_name in room_names:
+                print(room_name.upper())
+                print('-' * 40)
+                print(', '.join(self.all_rooms[room_name].occupants) + '\n\n')
+        else:
+            return 'No rooms have been created yet!\n'
+
+    def print_unallocated(self):
+        if len(self.unallocated_people) > 0:
+            print('\nUNALLOCATED PEOPLE')
+            print('-' * 40)
+            print(', '.join(self.unallocated_people) + '\n\n')
+        else:
+            return 'Nobody has not been allocated a room'
