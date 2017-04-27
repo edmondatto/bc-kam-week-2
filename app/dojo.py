@@ -49,30 +49,33 @@ class Dojo(object):
             raise TypeError('Arguments must both be strings')
 
     def add_person(self, person_name, person_position, wants_accommodation=False):
-        if person_position.lower().strip() == 'fellow':
-            new_fellow = Fellow(person_name)
-            self.list_of_people.append(person_name)
-            self.list_of_fellows.append(person_name)
-            self.total_number_of_fellows += 1
-            self.total_number_of_people += 1
-            office_allocation_msg = self.allocate_office_space(person_name)
-            living_space_allocation_message = ''
-            if wants_accommodation:
-                living_space_allocation_message = self.allocate_living_space(person_name)
-                # new_fellow.office_assigned =
-                # new_fellow.living_space_assigned =
-                # return new_fellow
-            return 'Fellow ' + person_name + ' has been successfully added.' + office_allocation_msg + '\n' + living_space_allocation_message
-        elif person_position.lower().strip() == 'staff':
-            new_staff = Staff(person_name)
-            self.list_of_people.append(person_name)
-            self.list_of_staff.append(person_name)
-            self.total_number_of_staff += 1
-            self.total_number_of_people += 1
-            office_allocation_msg = self.allocate_office_space(person_name)
-            return 'Staff ' + person_name + ' has been successfully added.' + '\n' + office_allocation_msg
+        if len(self.all_rooms) > 0:
+            if person_position.lower().strip() == 'fellow':
+                new_fellow = Fellow(person_name)
+                self.list_of_people.append(person_name)
+                self.list_of_fellows.append(person_name)
+                self.total_number_of_fellows += 1
+                self.total_number_of_people += 1
+                office_allocation_msg = self.allocate_office_space(person_name)
+                living_space_allocation_message = ''
+                if wants_accommodation:
+                    living_space_allocation_message = self.allocate_living_space(person_name)
+                    # new_fellow.office_assigned =
+                    # new_fellow.living_space_assigned =
+                    # return new_fellow
+                return 'Fellow ' + person_name + ' has been successfully added.\n' + office_allocation_msg + '\n' + living_space_allocation_message
+            elif person_position.lower().strip() == 'staff':
+                new_staff = Staff(person_name)
+                self.list_of_people.append(person_name)
+                self.list_of_staff.append(person_name)
+                self.total_number_of_staff += 1
+                self.total_number_of_people += 1
+                office_allocation_msg = self.allocate_office_space(person_name)
+                return 'Staff ' + person_name + ' has been successfully added.' + '\n' + office_allocation_msg
+            else:
+                return 'Enter a valid position e.g. Fellow, Staff'
         else:
-            return 'Enter a valid position e.g. Fellow, Staff'
+            return 'You cannot add a person if the dojo has no rooms!'
 
     def create_multiple_rooms(self, room_type, *room_names):
         if room_type.lower().strip() == 'office' or room_type.lower().strip() == 'living space':
@@ -117,7 +120,7 @@ class Dojo(object):
             if self.living_spaces[random_living_space].capacity == self.living_spaces[
                 random_living_space].number_of_occupants:
                 self.living_spaces[random_living_space].has_free_space = False
-            return '{} has been allocated the Office {}'.format(person_name, random_living_space)
+            return '{} has been allocated the Living Space {}'.format(person_name, random_living_space)
         else:
             warning = 'There are no rooms of type living spaces!'
             return warning

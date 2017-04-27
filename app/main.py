@@ -73,14 +73,14 @@ class AndelaDojo(cmd.Cmd):
 
     @docopt_cmd
     def do_add_person(self, arg):
-        """Usage: add_person <first_name> <last_name> <Fellow_or_Staff> [wants_accomodation]"""
+        """Usage: add_person <first_name> <last_name> <Fellow_or_Staff> [<wants_accomodation>]"""
         person_name = arg['<first_name>'] + ' ' + arg['<last_name>']
         person_position = arg['<Fellow_or_Staff>']
-        # if arg['[wants_accomodation]'] == 'Y':
-        #     wants_accomodation = True
-        # else:
-        #     wants_accomodation = False
-        output = the_dojo.add_person(person_name, person_position)
+        if arg['<wants_accomodation>'] == 'Y':
+            wants_accomodation = True
+        else:
+            wants_accomodation = False
+        output = the_dojo.add_person(person_name, person_position, wants_accomodation)
         print(output)
 
     def do_quit(self, arg):
