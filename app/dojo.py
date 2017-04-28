@@ -138,20 +138,43 @@ class Dojo(object):
     def print_room(self, room_name):
         return self.all_rooms[room_name].occupants
 
-    def print_allocations(self):
+    def print_allocations(self, *file_names):
         room_names = list(self.all_rooms.keys())
         if len(room_names) > 0:
+            file_content = ''
             for room_name in room_names:
-                print(room_name.upper())
-                print('-' * 40)
-                print(', '.join(self.all_rooms[room_name].occupants) + '\n\n')
+                title = room_name.upper() + '\n'
+                divider = '-' * 40 + '\n'
+                content = ', '.join(self.all_rooms[room_name].occupants) + '\n\n'
+                file_content += title + divider + content
+                print(title)
+                print(divider)
+                print(content)
+            if file_names:
+                for file_name in file_names:
+                    new_path = '/Users/user/PycharmProjects/bc-kam-week-2/app/' + file_name
+                    room_allocations = open(new_path, 'w')
+                    room_allocations.write(file_content)
+                    room_allocations.close()
         else:
             return 'No rooms have been created yet!\n'
 
-    def print_unallocated(self):
+    def print_unallocated(self, *file_name):
         if len(self.unallocated_people) > 0:
-            print('\nUNALLOCATED PEOPLE')
-            print('-' * 40)
-            print(', '.join(self.unallocated_people) + '\n\n')
+            title = '\nUNALLOCATED PEOPLE\n'
+            divider = ('-' * 40) + '\n'
+            content = ', '.join(self.unallocated_people) + '\n\n'
+            print(title)
+            print(divider)
+            print(content)
+            if file_name:
+                for name in file_name:
+                    new_path = '/Users/user/PycharmProjects/bc-kam-week-2/app/' + name
+                    unallocated_people = open(new_path, 'w')
+                    unallocated_people.write(title)
+                    unallocated_people.write(divider)
+                    unallocated_people.write(content)
+                    unallocated_people.close()
+                    print('\nUnallocated people have been printed to the file {}\n'.format(name))
         else:
             return 'Nobody has not been allocated a room'

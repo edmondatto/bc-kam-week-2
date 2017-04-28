@@ -98,14 +98,14 @@ class AndelaDojo(cmd.Cmd):
     def do_print_allocations(self, arg):
         """Usage: print_allocations [<-o=filename>]"""
         file_to_print = arg['<-o=filename>']
-        output = the_dojo.print_allocations()
+        output = the_dojo.print_allocations(file_to_print)
         print(output)
 
     @docopt_cmd
     def do_print_unallocated(self, arg):
         """Usage: print_unallocated [<-o=filename>]"""
         file_to_print = arg['<-o=filename>']
-        output = the_dojo.print_unallocated()
+        output = the_dojo.print_unallocated(file_to_print)
         print(output)
 
     def do_quit(self, arg):
