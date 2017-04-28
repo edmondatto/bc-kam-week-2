@@ -99,3 +99,50 @@ class TestDojoClass(TestCase):
         occupant_list = self.my_dojo.print_room('ops center')
         self.assertEqual(1, len(occupant_list), msg='Incorrect number of occupants')
         self.assertEqual(['Wolverine'], occupant_list, msg='Wolverine not in list of occupants')
+
+    def test_fellow_unallocated_living_space(self):
+        self.my_dojo.create_room('main office', 'office')
+        self.my_dojo.add_person('Professor X', 'fellow')
+        self.assertEqual('', self.my_dojo.list_of_fellows['Professor X'].living_space_assigned)
+        self.assertIn('There are no rooms of type living spaces!', self.my_dojo.add_person('Storm', 'fellow', True))
+        self.assertIn('Storm', self.my_dojo.unallocated_people)
+
+    def test_duplicate_name(self):
+        self.my_dojo.add_person('Cyclops', 'staff')
+        self.assertIn('A person with this name already exists', self.my_dojo.add_person('Cyclops', 'fellow'),
+                      msg='Duplicate name permitted!')
+
+    def test_valid_person_position_check(self):
+        self.assertIn('Enter a valid position e.g. Fellow, Staff', self.my_dojo.add_person('Magneto', 'villain'),
+                      msg='Invalid position permitted')
+        self.assertIn('Enter a valid position e.g. Staff, Fellow',
+                      self.my_dojo.add_multiple_people('good guys', 'logan', 'mystique'),
+                      msg='Invalid position permitted')
+
+    def test_no_office_spaces_with_free_space(self):
+        self.my_dojo.create_room('home', 'office')
+        self.my_dojo.add_multiple_people('staff', 'hulk', 'black panther', 'black widow', 'iron man', 'loki', 'thor')
+        self.assertFalse(self.my_dojo.all_rooms['home'].has_free_space)
+        self.assertIn('No offices with free space!', self.my_dojo.add_person('captain america', 'staff'),
+                      msg='No alert of no free office space')
+
+    def test_no_living_spaces_with_free_space(self):
+        self.my_dojo.create_room('home', 'office')
+        self.my_dojo.create_room('penthouse', 'living space')
+        self.my_dojo.add_person('the flash', 'fellow', True)
+        self.my_dojo.add_person('arrow', 'fellow', True)
+        self.my_dojo.add_person('aquaman', 'fellow', True)
+        self.my_dojo.add_person('joker', 'fellow', True)
+        self.assertFalse(self.my_dojo.all_rooms['penthouse'].has_free_space)
+        self.assertIn('No living spaces with free space!', self.my_dojo.add_person('supergirl', 'fellow', True))
+
+    def test_print_unallocated(self):
+        self.assertIn('Nobody has not been allocated a room', self.my_dojo.print_unallocated())
+        self.my_dojo.add_person('Unallocated guy', 'staff')
+        self.assertIsNone(self.my_dojo.print_unallocated())
+
+    def test_print_allocations(self):
+        self.assertIn('No rooms have been created yet!', self.my_dojo.print_allocations())
+        self.my_dojo.create_room('main', 'office')
+        self.my_dojo.add_person('Unallocated guy', 'staff')
+        self.assertIsNone(self.my_dojo.print_allocations())

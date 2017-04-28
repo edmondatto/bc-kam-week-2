@@ -128,7 +128,7 @@ class Dojo(object):
                     self.living_spaces[random_living_space].has_free_space = False
                 return '{} has been allocated the Living Space {}'.format(person_name, random_living_space)
             except IndexError:
-                return 'No offices with free space!'
+                return 'No living spaces with free space!'
 
         else:
             self.unallocated_people.append(person_name)
