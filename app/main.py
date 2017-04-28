@@ -12,6 +12,9 @@ Usage:
         
     dojo create_room <room_type> <room_name>...
     dojo add_person <first_name> <last_name> <Fellow_or_Staff> [wants_accommodation]
+    dojo print_room <room_name>
+    dojo print_allocations [<-o=filename>]
+    dojo print_unallocated [<print_unallocated>]
     dojo (-h | --help | --version)
 Options:
     -i, --interactive  Interactive Mode
@@ -81,6 +84,28 @@ class AndelaDojo(cmd.Cmd):
         else:
             wants_accomodation = False
         output = the_dojo.add_person(person_name, person_position, wants_accomodation)
+        print(output)
+
+    @docopt_cmd
+    def do_print_room(self, arg):
+        """Usage: print_room <room_name>"""
+        room_name = arg['<room_name>']
+        output = the_dojo.print_room(room_name)
+        for person_name in output:
+            print(person_name)
+
+    @docopt_cmd
+    def do_print_allocations(self, arg):
+        """Usage: print_allocations [<-o=filename>]"""
+        file_to_print = arg['<-o=filename>']
+        output = the_dojo.print_allocations(file_to_print)
+        print(output)
+
+    @docopt_cmd
+    def do_print_unallocated(self, arg):
+        """Usage: print_unallocated [<-o=filename>]"""
+        file_to_print = arg['<-o=filename>']
+        output = the_dojo.print_unallocated(file_to_print)
         print(output)
 
     def do_quit(self, arg):
