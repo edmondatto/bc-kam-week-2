@@ -159,14 +159,17 @@ class Dojo(object):
                 print(title)
                 print(divider)
                 print(content)
-            if file_names[0] is not None:
-                for file_name in file_names:
-                    new_path = '/Users/user/PycharmProjects/bc-kam-week-2/app/' + file_name
-                    room_allocations = open(new_path, 'w')
-                    room_allocations.write(file_content)
-                    room_allocations.close()
-                    print('\n Room allocations have been printed to the file {}\n'.format(file_name))
-            return ''
+            try:
+                if file_names[0] is not None:
+                    for file_name in file_names:
+                        new_path = '/Users/user/PycharmProjects/bc-kam-week-2/app/' + file_name
+                        room_allocations = open(new_path, 'w')
+                        room_allocations.write(file_content)
+                        room_allocations.close()
+                        print('\n Room allocations have been printed to the file {}\n'.format(file_name))
+                return ''
+            except IndexError:
+                pass
         else:
             return ' No rooms have been created yet!\n'
 
@@ -180,15 +183,18 @@ class Dojo(object):
             print(title)
             print(divider)
             print(content)
-            if file_name[0] is not None:
-                for name in file_name:
-                    new_path = '/Users/user/PycharmProjects/bc-kam-week-2/app/' + name
-                    unallocated_people = open(new_path, 'w')
-                    unallocated_people.write(title + '\n')
-                    unallocated_people.write(divider)
-                    unallocated_people.write(content)
-                    unallocated_people.close()
-                    print('\n Unallocated people have been printed to the file {}\n'.format(name))
-            return ''
+            try:
+                if file_name[0] is not None:
+                    for name in file_name:
+                        new_path = '/Users/user/PycharmProjects/bc-kam-week-2/app/' + name
+                        unallocated_people = open(new_path, 'w')
+                        unallocated_people.write(title + '\n')
+                        unallocated_people.write(divider)
+                        unallocated_people.write(content)
+                        unallocated_people.close()
+                        print('\n Unallocated people have been printed to the file {}\n'.format(name))
+                return ''
+            except IndexError:
+                pass
         else:
             return ' Nobody is unallocated'

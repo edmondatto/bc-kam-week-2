@@ -36,8 +36,8 @@ class TestDojoClass(TestCase):
 
     def test_valid_room_type(self):
         invalid_room_type = self.my_dojo.create_room('war room', 'bathroom')
-        self.assertEqual(invalid_room_type, 'Enter a valid room type!', msg='Permits invalid room types to be created')
-        self.assertIn('Enter a valid room type e.g. Office, Living space',
+        self.assertEqual(invalid_room_type, ' Enter a valid room type!', msg='Permits invalid room types to be created')
+        self.assertIn(' Enter a valid room type e.g. Office, Living space',
                       self.my_dojo.create_multiple_rooms('pantry', 'one', 'two'))
 
     def test_valid_input_for_create_room(self):
@@ -92,7 +92,8 @@ class TestDojoClass(TestCase):
 
     def test_rejects_duplicate_rooms(self):
         self.my_dojo.create_room('ops center', 'office')
-        self.assertEqual(self.my_dojo.create_room('ops center', 'office'), 'A room called ops center already exists',
+        self.assertEqual(self.my_dojo.create_room('ops center', 'office'),
+                         ' A room called ops center already exists!\n',
                          msg='Does not detect duplicate room entry')
 
     def test_print_room(self):
@@ -139,7 +140,7 @@ class TestDojoClass(TestCase):
         self.assertIn('No living spaces with free space!', self.my_dojo.add_person('supergirl', 'fellow', True))
 
     def test_print_unallocated(self):
-        self.assertIn('Nobody has not been allocated a room', self.my_dojo.print_unallocated())
+        self.assertIn('Nobody is unallocated', self.my_dojo.print_unallocated())
         self.my_dojo.add_person('Unallocated guy', 'staff')
         self.assertIsNone(self.my_dojo.print_unallocated())
 
