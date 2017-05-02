@@ -63,7 +63,7 @@ class Dojo(object):
                     self.unallocated_people.append(person_name)
                 if wants_accommodation:
                     living_space_allocation_message = self.allocate_living_space(person_name)
-                return ' Fellow ' + person_name + ' has been successfully added.\n' + office_allocation_msg + living_space_allocation_message + '\n'
+                return ' Fellow ' + person_name + ' has been successfully added.\n' + office_allocation_msg + '\n' + living_space_allocation_message + '\n'
             elif person_position.lower().strip() == 'staff':
                 new_staff = Staff(person_name)
                 self.list_of_people[person_name] = new_staff
@@ -198,3 +198,44 @@ class Dojo(object):
                 pass
         else:
             return ' Nobody is unallocated'
+
+    def remove_person(self, person_name, room_name):
+        self.all_rooms[room_name].occupants.remove(person_name)
+        self.all_rooms[room_name].number_of_occupants -= 1
+
+    def reallocate_person(self, person_name, new_room_name):
+        if person_name in list(self.list_of_people.keys()):
+            if new_room_name in list(self.all_rooms.keys()):
+                new_room = self.all_rooms[new_room_name]
+                old_room = self.list_of_people[person_name].office_assigned
+                if new_room.room_type.lower() == 'office':
+                    if new_room.room_type == self.all_rooms[old_room].room_type:
+                        self.remove_person(person_name, old_room)
+                        if new_room.has_free_space:
+                            new_room.occupants.append(person_name)
+                            new_room.number_of_occupants += 1
+                            self.list_of_people[person_name].office_assigned = new_room_name
+                            return ' {} has successfully been reallocated to the rooom {}.\n'.format(person_name,
+                                                                                                     new_room_name)
+                        else:
+                            return ' {} does not have any free space!\n'.format(new_room_name)
+                    else:
+                        return ' You cannot reallocate a person to a room of a different type!\n'
+                if new_room.room_type.lower() == 'living space':
+                    if self.list_of_people[person_name].position == 'fellow':
+                        if new_room.room_type == self.all_rooms[old_room].room_type:
+                            self.remove_person(person_name, old_room)
+                            if new_room.has_free_space:
+                                new_room.occupants.append(person_name)
+                                new_room.number_of_occupants += 1
+                                self.list_of_people[person_name].living_space_assigned = new_room_name
+                            else:
+                                return ' {} does not have any free space!\n'.format(new_room_name)
+                        else:
+                            return ' You cannot reallocate a person to a room of a different type\n'
+                    else:
+                        return ' Staff members cannot be allocated living spaces!\n'
+            else:
+                return ' A room called {} does not exist in the dojo\n'.format(new_room_name)
+        else:
+            return ' A person called {} does not exist in the dojo!\n'.format(person_name)

@@ -15,6 +15,7 @@ Usage:
     dojo print_room <room_name>
     dojo print_allocations [<-o=filename>]
     dojo print_unallocated [<print_unallocated>]
+    dojo reallocate_room <first_name> <last_name> <new_room_name>
     dojo (-h | --help | --version)
 Options:
     -i, --interactive  Interactive Mode
@@ -117,6 +118,14 @@ class AndelaDojo(cmd.Cmd):
         """Usage: print_unallocated [<-o=filename>]"""
         file_to_print = arg['<-o=filename>']
         output = the_dojo.print_unallocated(file_to_print)
+        print(output)
+
+    @docopt_cmd
+    def do_reallocate_room(self, arg):
+        """Usage: reallocate_room <first_name> <last_name> <new_room_name>"""
+        person_name = arg['<first_name>'] + ' ' + arg['<last_name>']
+        new_room_name = arg['<new_room_name>']
+        output = the_dojo.reallocate_person(person_name, new_room_name)
         print(output)
 
     def do_quit(self, arg):
