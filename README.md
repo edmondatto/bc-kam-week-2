@@ -3,6 +3,9 @@
 ## Overview
 This release of the application has five core features via it's command line interface
 
+## Dependecies
+
+
 ### Create room
 ```
 USAGE: create_room <room_type> <room_name>...
