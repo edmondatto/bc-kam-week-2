@@ -15,6 +15,8 @@ Usage:
     dojo print_room <room_name>
     dojo print_allocations [<-o=filename>]
     dojo print_unallocated [<print_unallocated>]
+    dojo reallocate_room <first_name> <last_name> <new_room_name>
+    dojo load_people
     dojo (-h | --help | --version)
 Options:
     -i, --interactive  Interactive Mode
@@ -58,9 +60,16 @@ def intro():
 
 
 class AndelaDojo(cmd.Cmd):
-    intro = '\nThis is the Andela Dojo Ops Center!' \
-            + ' (type help for a list of commands)\n'
-    prompt = '[dojo] > '
+    intro = '\n This is the Andela Dojo Ops Center!' \
+            + ' (type help for a list of commands)\n' + \
+            '\n Here\'s all the amazing things you can do' \
+            '\n > Create rooms (offices and living spaces) in the dojo' \
+            '\n > Add people (Staff and Fellows) and automatically assign them rooms' \
+            '\n > Print a list of the rooms in the dojo and the people assigned to them' \
+            '\n > Print a list of people who are yet to be allocated rooms' \
+            '\n\n For more information and more detailed usage examples, check out the documentation on Github' \
+            '\n https://github.com/edmondatto/bc-kam-week-2\n'
+    prompt = ' [dojo] > '
     file = None
 
     @docopt_cmd
@@ -73,16 +82,20 @@ class AndelaDojo(cmd.Cmd):
         for room_name in room_names:
             output = the_dojo.create_room(room_name, room_type)
             print(output)
+        print('\n')
 
     @docopt_cmd
     def do_add_person(self, arg):
         """Usage: add_person <first_name> <last_name> <Fellow_or_Staff> [<wants_accomodation>]"""
         person_name = arg['<first_name>'] + ' ' + arg['<last_name>']
         person_position = arg['<Fellow_or_Staff>']
-        if arg['<wants_accomodation>'] == 'Y':
-            wants_accomodation = True
-        else:
-            wants_accomodation = False
+        accomodation_option = arg['<wants_accomodation>']
+        wants_accomodation = None
+        if accomodation_option is not None:
+            if accomodation_option.upper() == 'Y':
+                wants_accomodation = True
+            else:
+                wants_accomodation = False
         output = the_dojo.add_person(person_name, person_position, wants_accomodation)
         print(output)
 
@@ -106,6 +119,20 @@ class AndelaDojo(cmd.Cmd):
         """Usage: print_unallocated [<-o=filename>]"""
         file_to_print = arg['<-o=filename>']
         output = the_dojo.print_unallocated(file_to_print)
+        print(output)
+
+    @docopt_cmd
+    def do_reallocate_room(self, arg):
+        """Usage: reallocate_room <first_name> <last_name> <new_room_name>"""
+        person_name = arg['<first_name>'] + ' ' + arg['<last_name>']
+        new_room_name = arg['<new_room_name>']
+        output = the_dojo.reallocate_person(person_name, new_room_name)
+        print(output)
+
+    @docopt_cmd
+    def do_load_people(self, arg):
+        """Usage: load_people"""
+        output = the_dojo.load_people()
         print(output)
 
     def do_quit(self, arg):

@@ -1,12 +1,17 @@
 import random
 
+from peewee import *
+
 from app.fellow import Fellow
 from app.living_space import LivingSpace
 from app.office import Office
 from app.staff import Staff
+from db_models.models import *
 
 
 class Dojo(object):
+    """A Class that defines a dojo, its properties and characteristics"""
+
     def __init__(self):
         self.total_number_of_rooms = 0
         self.number_of_living_spaces = 0
@@ -23,9 +28,10 @@ class Dojo(object):
         self.unallocated_people = []
 
     def create_room(self, room_name, room_type):
+        """A method for creating new rooms of one of 2 types (Office or Living Space) in the Dojo"""
         if type(room_name) == str and type(room_type) == str:
             if room_name in list(self.all_rooms.keys()):
-                return 'A room called {} already exists'.format(room_name)
+                return ' A room called {} already exists!\n'.format(room_name)
             else:
                 if room_type.lower().strip() == 'office':
                     new_office = Office(room_name)
@@ -33,20 +39,21 @@ class Dojo(object):
                     self.number_of_offices += 1
                     self.office_spaces[room_name] = new_office
                     self.all_rooms[room_name] = new_office
-                    return 'An office called ' + room_name + ' has been successfully created!'
+                    return ' An office called ' + room_name + ' has been successfully created!'
                 elif room_type.lower().strip() == 'living space':
                     new_living_space = LivingSpace(room_name)
                     self.total_number_of_rooms += 1
                     self.number_of_living_spaces += 1
                     self.living_spaces[room_name] = new_living_space
                     self.all_rooms[room_name] = new_living_space
-                    return 'A living space called ' + room_name + ' has been successfully created!'
+                    return ' A living space called ' + room_name + ' has been successfully created!'
                 else:
-                    return 'Enter a valid room type!'
+                    return ' Enter a valid room type!'
         else:
-            raise TypeError('Arguments must both be strings')
+            raise TypeError(' Arguments must both be strings')
 
     def add_person(self, person_name, person_position, wants_accommodation=False):
+        """A method that defines how a new occupant of the dojo is created and assigned space"""
         if person_name not in list(self.list_of_people.keys()):
             if person_position.lower().strip() == 'fellow':
                 new_fellow = Fellow(person_name)
@@ -60,7 +67,7 @@ class Dojo(object):
                     self.unallocated_people.append(person_name)
                 if wants_accommodation:
                     living_space_allocation_message = self.allocate_living_space(person_name)
-                return 'Fellow ' + person_name + ' has been successfully added.\n' + office_allocation_msg + '\n' + living_space_allocation_message
+                return ' Fellow ' + person_name + ' has been successfully added.\n' + office_allocation_msg + '\n' + living_space_allocation_message + '\n'
             elif person_position.lower().strip() == 'staff':
                 new_staff = Staff(person_name)
                 self.list_of_people[person_name] = new_staff
@@ -70,28 +77,30 @@ class Dojo(object):
                 office_allocation_msg = self.allocate_office_space(person_name)
                 if not len(self.list_of_people[person_name].office_assigned):
                     self.unallocated_people.append(person_name)
-                return 'Staff ' + person_name + ' has been successfully added.' + '\n' + office_allocation_msg
+                return ' Staff ' + person_name + ' has been successfully added.' + '\n' + office_allocation_msg + '\n'
             else:
-                return 'Enter a valid position e.g. Fellow, Staff'
+                return ' Enter a valid position e.g. Fellow, Staff'
         else:
-            return 'A person with this name already exists'
+            return ' A person with this name already exists'
 
     def create_multiple_rooms(self, room_type, *room_names):
+        """A method that allows for creation of multiple rooms simultaneously"""
         if room_type.lower().strip() == 'office' or room_type.lower().strip() == 'living space':
             for room_name in room_names:
                 print(self.create_room(room_name, room_type))
         else:
-            return 'Enter a valid room type e.g. Office, Living space'
+            return ' Enter a valid room type e.g. Office, Living space'
 
     def add_multiple_people(self, position, *people_names):
+        """A method that allows for addition of multiple people to the dojo simultaneously"""
         if position.lower().strip() == 'fellow' or position.lower().strip() == 'staff':
             for person_name in people_names:
                 print(self.add_person(person_name, position))
         else:
-            print('It runs')
-            return 'Enter a valid position e.g. Staff, Fellow'
+            return ' Enter a valid position e.g. Staff, Fellow'
 
     def allocate_office_space(self, person_name):
+        """A method that is called from within the add_person method to assign them office space"""
         rooms_with_space = []
         if self.office_spaces:
             for key, value in self.office_spaces.items():
@@ -105,14 +114,15 @@ class Dojo(object):
                 if self.office_spaces[random_office_space].capacity == self.office_spaces[
                     random_office_space].number_of_occupants:
                     self.office_spaces[random_office_space].has_free_space = False
-                return '{} has been allocated the Office {}'.format(person_name, random_office_space)
+                return ' {} has been allocated the Office {}'.format(person_name, random_office_space) + '\n'
             except IndexError:
-                return 'No offices with free space!'
+                return ' No offices with free space!'
 
         else:
-            return 'There are no rooms of type office spaces!'
+            return ' There are no rooms of type office spaces!'
 
     def allocate_living_space(self, person_name):
+        """A method that is called from within the add_person_method to assign them a living space"""
         rooms_with_space = []
         if self.living_spaces:
             for key, value in self.living_spaces.items():
@@ -126,55 +136,156 @@ class Dojo(object):
                 if self.living_spaces[random_living_space].capacity == self.living_spaces[
                     random_living_space].number_of_occupants:
                     self.living_spaces[random_living_space].has_free_space = False
-                return '{} has been allocated the Living Space {}'.format(person_name, random_living_space)
+                return ' {} has been allocated the Living Space {}'.format(person_name, random_living_space)
             except IndexError:
-                return 'No living spaces with free space!'
+                return ' No living spaces with free space!'
 
         else:
             self.unallocated_people.append(person_name)
-            warning = 'There are no rooms of type living spaces!'
+            warning = ' There are no rooms of type living spaces!'
             return warning
 
     def print_room(self, room_name):
+        """A method that returns a list of all the occupants in a particular room"""
         return self.all_rooms[room_name].occupants
 
     def print_allocations(self, *file_names):
+        """A method that prints to the screen and optionally to a file, all the people assigned to the different 
+        rooms in the dojo."""
         room_names = list(self.all_rooms.keys())
         if len(room_names) > 0:
             file_content = ''
             for room_name in room_names:
-                title = room_name.upper() + '\n'
-                divider = '-' * 40 + '\n'
-                content = ', '.join(self.all_rooms[room_name].occupants) + '\n\n'
-                file_content += title + divider + content
+                title = '\n ' + room_name.upper() + ' (' + self.all_rooms[room_name].room_type + ')'
+                divider = ' ' + '-' * 40 + '\n'
+                content = ' ' + ', '.join(self.all_rooms[room_name].occupants) + '\n\n'
+                file_content += title + '\n' + divider + content
                 print(title)
                 print(divider)
                 print(content)
-            if file_names:
-                for file_name in file_names:
-                    new_path = '/Users/user/PycharmProjects/bc-kam-week-2/app/' + file_name
-                    room_allocations = open(new_path, 'w')
-                    room_allocations.write(file_content)
-                    room_allocations.close()
+            try:
+                if file_names[0] is not None:
+                    for file_name in file_names:
+                        new_path = 'Exports/' + file_name
+                        room_allocations = open(new_path, 'w')
+                        room_allocations.write(file_content)
+                        room_allocations.close()
+                        print('\n Room allocations have been printed to the file {}\n'.format(file_name))
+                return ''
+            except IndexError:
+                pass
         else:
-            return 'No rooms have been created yet!\n'
+            return ' No rooms have been created yet!\n'
 
     def print_unallocated(self, *file_name):
+        """A method that prints to the screen and optionally to a file, all the people who haven't been assigned 
+        space in the dojo. """
         if len(self.unallocated_people) > 0:
-            title = '\nUNALLOCATED PEOPLE\n'
-            divider = ('-' * 40) + '\n'
-            content = ', '.join(self.unallocated_people) + '\n\n'
+            title = '\n UNALLOCATED PEOPLE'
+            divider = ' ' + ('-' * 40) + '\n'
+            content = ' ' + ', '.join(self.unallocated_people) + '\n\n'
             print(title)
             print(divider)
             print(content)
-            if file_name:
-                for name in file_name:
-                    new_path = '/Users/user/PycharmProjects/bc-kam-week-2/app/' + name
-                    unallocated_people = open(new_path, 'w')
-                    unallocated_people.write(title)
-                    unallocated_people.write(divider)
-                    unallocated_people.write(content)
-                    unallocated_people.close()
-                    print('\nUnallocated people have been printed to the file {}\n'.format(name))
+            try:
+                if file_name[0] is not None:
+                    for name in file_name:
+                        new_path = 'Exports/' + name
+                        unallocated_people = open(new_path, 'w')
+                        unallocated_people.write(title + '\n')
+                        unallocated_people.write(divider)
+                        unallocated_people.write(content)
+                        unallocated_people.close()
+                        print('\n Unallocated people have been printed to the file {}\n'.format(name))
+                return ''
+            except IndexError:
+                pass
         else:
-            return 'Nobody has not been allocated a room'
+            return ' Nobody is unallocated'
+
+    def remove_person(self, person_name, room_name):
+        if person_name in self.all_rooms[room_name].occupants and room_name in self.all_rooms.keys():
+            self.all_rooms[room_name].occupants.remove(person_name)
+            self.all_rooms[room_name].number_of_occupants -= 1
+        else:
+            return person_name + ' has not been assigned to the room ' + room_name + ', or, the room ' + room_name + ' is invalid '
+
+    def reallocate_person(self, person_name, new_room_name):
+        if person_name in list(self.list_of_people.keys()):
+            if new_room_name in list(self.all_rooms.keys()):
+                new_room = self.all_rooms[new_room_name]
+                old_room = self.list_of_people[person_name].office_assigned
+                if new_room.room_type.lower() == 'office':
+                    if new_room.room_type == self.all_rooms[old_room].room_type:
+                        self.remove_person(person_name, old_room)
+                        if new_room.has_free_space:
+                            new_room.occupants.append(person_name)
+                            new_room.number_of_occupants += 1
+                            self.list_of_people[person_name].office_assigned = new_room_name
+                            return ' {} has successfully been reallocated to the rooom {}.\n'.format(person_name,
+                                                                                                     new_room_name)
+                        else:
+                            return ' {} does not have any free space!\n'.format(new_room_name)
+                    else:
+                        return ' You cannot reallocate a person to a room of a different type!\n'
+                if new_room.room_type.lower() == 'living space':
+                    if self.list_of_people[person_name].position == 'fellow':
+                        if new_room.room_type == self.all_rooms[old_room].room_type:
+                            self.remove_person(person_name, old_room)
+                            if new_room.has_free_space:
+                                new_room.occupants.append(person_name)
+                                new_room.number_of_occupants += 1
+                                self.list_of_people[person_name].living_space_assigned = new_room_name
+                            else:
+                                return ' {} does not have any free space!\n'.format(new_room_name)
+                        else:
+                            return ' You cannot reallocate a person to a room of a different type\n'
+                    else:
+                        return ' Staff members cannot be allocated living spaces!\n'
+            else:
+                return ' A room called {} does not exist in the dojo\n'.format(new_room_name)
+        else:
+            return ' A person called {} does not exist in the dojo!\n'.format(person_name)
+
+    def load_people(self):
+        """A function that adds people to rooms from a txt file"""
+        load_file = open('Imports/load_file', 'r')
+        people_list = [x.strip('\n') for x in load_file.readlines()]
+        for person in people_list:
+            if person.split(' ')[2].lower() == 'staff':
+                self.add_person(person.split(' ')[0] + ' ' + person.split(' ')[1], 'staff')
+            if person.split(' ')[2].lower() == 'fellow':
+                if person.split(' ')[3].lower() == 'y':
+                    self.add_person(person.split(' ')[0] + ' ' + person.split(' ')[1], 'fellow', True)
+                if person.split(' ')[3].lower() == 'n':
+                    self.add_person(person.split(' ')[0] + ' ' + person.split(' ')[1], 'fellow')
+
+    def save_state(self):
+        """A function that saves the applications data to a database"""
+        db.connect()
+        db.create_tables([Fellow, Staff, Room], safe=True)
+        for key, value in self.list_of_fellows.items():
+            try:
+                Fellow.create(person_name=key,
+                              person_position=self.list_of_fellows[key].position,
+                              office_assigned=self.list_of_fellows[key].office_assigned,
+                              living_space_assigned=self.list_of_fellows[key].living_space_assigned
+                              )
+            except IntegrityError:
+                pass
+        for key, value in self.list_of_staff.items():
+            try:
+                Staff.create(person_name=key,
+                             person_position=self.list_of_staff[key].position,
+                             office_assigned=self.list_of_staff[key].office_assigned
+                             )
+            except ValueError:
+                pass
+        # for key, value in self.all_rooms.items():
+        #     Room.create(room_name=key,
+        #                 room_type=self.all_rooms[key].room_type,
+        #                 capacity=self.all_rooms[key].capacity,
+        #                 has_free_space=self.all_rooms[key].has_free_space,
+        #                 occupants=self.all_rooms[key].occupants,
+        #                 number_of_occupants=self.all_rooms[key].number_of_occupants)
+        db.close()

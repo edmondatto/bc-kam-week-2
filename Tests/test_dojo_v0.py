@@ -148,3 +148,21 @@ class TestDojoClass(TestCase):
         self.my_dojo.create_room('main', 'office')
         self.my_dojo.add_person('Unallocated guy', 'staff')
         self.assertIsNone(self.my_dojo.print_allocations())
+
+    def test_successfully_removes_person_from_room(self):
+        self.my_dojo.create_room('Krypton', 'office')
+        self.my_dojo.add_person('John Wick', 'Staff')
+        self.assertTrue('John Wick' in self.my_dojo.all_rooms['Krypton'].occupants, msg='Failed room allocation')
+        self.my_dojo.remove_person('John Wick', 'Krypton')
+        self.assertFalse('John Wick' in self.my_dojo.all_rooms['Krypton'].occupants, msg='Failed room allocation')
+        wrong_attempt = self.my_dojo.remove_person('King Kong', 'Krypton')
+        self.assertEqual(wrong_attempt,
+                         'King Kong has not been assigned to the room Krypton, or, the room Krypton is invalid ')
+
+    def test_succesfully_load_people_from_file(self):
+        self.my_dojo.create_room('main', 'office')
+        self.my_dojo.create_room('penthouse', 'living space')
+        self.my_dojo.load_people()
+        self.assertIn('OLUWAFEMI SULE', self.my_dojo.list_of_people, msg='File did not load successfully')
+        self.assertIn('DOMINIC WALTERS', self.my_dojo.list_of_staff, msg='File did not load successfully')
+        self.assertEqual(8, self.my_dojo.total_number_of_people, msg='Wrong number of people loaded')
