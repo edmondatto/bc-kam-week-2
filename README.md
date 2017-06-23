@@ -1,9 +1,10 @@
 [![Build Status](https://travis-ci.org/edmondatto/bc-kam-week-2.svg?branch=master)](https://travis-ci.org/edmondatto/bc-kam-week-2)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/ce741707f6fe46bf9f73065779778368)](https://www.codacy.com/app/edmondatto/bc-kam-week-2?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=edmondatto/bc-kam-week-2&amp;utm_campaign=Badge_Grade)
 
 ## Overview
 This release of the application has five core features via it's command line interface
 
-## Dependecies
+## Dependencies
 
 
 ### Create room
