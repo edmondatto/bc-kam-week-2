@@ -1,7 +1,5 @@
 import random
 
-from peewee import *
-
 from app.fellow import Fellow
 from app.living_space import LivingSpace
 from app.office import Office
@@ -259,33 +257,41 @@ class Dojo(object):
                     self.add_person(person.split(' ')[0] + ' ' + person.split(' ')[1], 'fellow', True)
                 if person.split(' ')[3].lower() == 'n':
                     self.add_person(person.split(' ')[0] + ' ' + person.split(' ')[1], 'fellow')
+        return " People have been loaded successfully from the file"
 
     def save_state(self):
         """A function that saves the applications data to a database"""
         db.connect()
-        db.create_tables([Fellow, Staff, Room], safe=True)
+        db.create_tables([FellowModel, StaffModel, RoomModel], safe=True)
         for key, value in self.list_of_fellows.items():
             try:
-                Fellow.create(person_name=key,
-                              person_position=self.list_of_fellows[key].position,
-                              office_assigned=self.list_of_fellows[key].office_assigned,
-                              living_space_assigned=self.list_of_fellows[key].living_space_assigned
-                              )
+                FellowModel.create(person_name=key,
+                                   person_position=self.list_of_fellows[key].position,
+                                   office_assigned=self.list_of_fellows[key].office_assigned,
+                                   living_space_assigned=self.list_of_fellows[key].living_space_assigned
+                                   )
             except IntegrityError:
                 pass
         for key, value in self.list_of_staff.items():
             try:
-                Staff.create(person_name=key,
-                             person_position=self.list_of_staff[key].position,
-                             office_assigned=self.list_of_staff[key].office_assigned
-                             )
-            except ValueError:
+                StaffModel.create(person_name=key,
+                                  person_position=self.list_of_staff[key].position,
+                                  office_assigned=self.list_of_staff[key].office_assigned
+                                  )
+            except IntegrityError:
                 pass
-        # for key, value in self.all_rooms.items():
-        #     Room.create(room_name=key,
-        #                 room_type=self.all_rooms[key].room_type,
-        #                 capacity=self.all_rooms[key].capacity,
-        #                 has_free_space=self.all_rooms[key].has_free_space,
-        #                 occupants=self.all_rooms[key].occupants,
-        #                 number_of_occupants=self.all_rooms[key].number_of_occupants)
+        for key, value in self.all_rooms.items():
+            try:
+                RoomModel.create(room_name=key,
+                                 room_type=self.all_rooms[key].room_type,
+                                 capacity=self.all_rooms[key].capacity,
+                                 has_free_space=self.all_rooms[key].has_free_space,
+                                 occupants=self.all_rooms[key].occupants,
+                                 number_of_occupants=self.all_rooms[key].number_of_occupants)
+            except IntegrityError:
+                pass
         db.close()
+        return "Save state successful"
+
+    def load_state(self):
+        pass

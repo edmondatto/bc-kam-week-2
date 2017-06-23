@@ -135,6 +135,12 @@ class AndelaDojo(cmd.Cmd):
         output = the_dojo.load_people()
         print(output)
 
+    @docopt_cmd
+    def do_save_state(self, arg):
+        """Usage: save_state"""
+        output = the_dojo.save_state()
+        print(output)
+
     def do_quit(self, arg):
         """Quits out of Interactive Mode."""
         print('You have left the Dojo!')
