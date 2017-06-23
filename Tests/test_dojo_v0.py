@@ -92,7 +92,8 @@ class TestDojoClass(TestCase):
 
     def test_rejects_duplicate_rooms(self):
         self.my_dojo.create_room('ops center', 'office')
-        self.assertEqual(self.my_dojo.create_room('ops center', 'office'), 'A room called ops center already exists',
+        self.assertEqual(self.my_dojo.create_room('ops center', 'office'),
+                         ' A room called ops center already exists!\n',
                          msg='Does not detect duplicate room entry')
 
     def test_print_room(self):
