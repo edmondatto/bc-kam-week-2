@@ -17,6 +17,8 @@ Usage:
     dojo print_unallocated [<print_unallocated>]
     dojo reallocate_room <first_name> <last_name> <new_room_name>
     dojo load_people
+    dojo save_state
+    dojo load_state
     dojo (-h | --help | --version)
 Options:
     -i, --interactive  Interactive Mode
@@ -139,6 +141,12 @@ class AndelaDojo(cmd.Cmd):
     def do_save_state(self, arg):
         """Usage: save_state"""
         output = the_dojo.save_state()
+        print(output)
+
+    @docopt_cmd
+    def do_load_state(self, arg):
+        """Usage: load_state"""
+        output = the_dojo.load_state()
         print(output)
 
     def do_quit(self, arg):
