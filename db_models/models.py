@@ -1,6 +1,6 @@
 from peewee import *
 
-db = SqliteDatabase('dojo.db')
+db = SqliteDatabase(None)
 
 
 class FellowModel(Model):

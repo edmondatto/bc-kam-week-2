@@ -259,9 +259,9 @@ class Dojo(object):
                     self.add_person(person.split(' ')[0] + ' ' + person.split(' ')[1], 'fellow')
         return " People have been loaded successfully from the file"
 
-    def save_state(self):
+    def save_state(self, db_name='dojo.db'):
         """A function that saves the applications data to a database"""
-        db.connect()
+        db.init(db_name)
         db.create_tables([FellowModel, StaffModel, RoomModel], safe=True)
         for key, value in self.list_of_fellows.items():
             try:
@@ -290,58 +290,73 @@ class Dojo(object):
                                  number_of_occupants=self.all_rooms[key].number_of_occupants)
             except IntegrityError:
                 pass
-        db.close()
-        return "Saved state successfully"
 
-    def load_state(self):
-        db.connect()
-        queried_fellows = FellowModel.select()
-        for queried_fellow in queried_fellows:
-            new_fellow_object = Fellow(queried_fellow.person_name)
-            new_fellow_object.living_space_assigned = queried_fellow.living_space_assigned
-            new_fellow_object.office_assigned = queried_fellow.office_assigned
-            new_fellow_object.position = 'Fellow'
-            self.list_of_fellows[queried_fellow.person_name] = new_fellow_object
-            self.list_of_people[queried_fellow.person_name] = new_fellow_object
-            self.total_number_of_fellows += 1
-            self.total_number_of_people += 1
-        queried_staffers = StaffModel.select()
-        for queried_staffer in queried_staffers:
-            new_staffer_object = Staff(queried_staffer.person_name)
-            new_staffer_object.position = queried_staffer.person_position
-            new_staffer_object.office_assigned = queried_staffer.office_assigned
-            self.list_of_staff[queried_staffer.person_name] = new_staffer_object
-            self.list_of_people[queried_staffer.person_name] = new_staffer_object
-            self.total_number_of_staff += 1
-            self.total_number_of_people += 1
-        queried_rooms = RoomModel.select()
-        for queried_room in queried_rooms:
-            if queried_room.room_type.lower() == 'office':
-                new_office_object = Office(queried_room.room_name)
-                new_office_object.room_type = queried_room.room_type
-                new_office_object.number_of_occupants = queried_room.number_of_occupants
-                new_office_object.capacity = queried_room.capacity
-                new_office_object.occupants = queried_room.occupants
-                if queried_room.has_free_space == 0:
-                    new_office_object.has_free_space = False
-                if queried_room.has_free_space == 1:
-                    new_office_object.has_free_space = True
-                self.office_spaces[queried_room.room_name] = new_office_object
-                self.all_rooms[queried_room.room_name] = new_office_object
-                self.number_of_offices += 1
-            if queried_room.room_type.lower() == 'living space':
-                new_living_space_object = LivingSpace(queried_room.room_name)
-                new_living_space_object.room_type = queried_room.room_type
-                new_living_space_object.number_of_occupants = queried_room.number_of_occupants
-                new_living_space_object.occupants = queried_room.occupants
-                new_living_space_object.capacity = queried_room.capacity
-                if queried_room.has_free_space == 0:
-                    new_living_space_object.has_free_space = False
-                if queried_room.has_free_space == 1:
-                    new_living_space_object.has_free_space = True
-                self.living_spaces[queried_room.room_name] = new_living_space_object
-                self.all_rooms[queried_room.room_name] = new_living_space_object
-                self.number_of_living_spaces += 1
-            self.total_number_of_rooms += 1
         db.close()
-        return 'Loaded state successfully'
+        return " Saved state successfully"
+
+    def load_state(self, db_name):
+        try:
+            db.init(db_name)
+            queried_rooms = RoomModel.select()
+            for queried_room in queried_rooms:
+                if queried_room.room_type.lower() == 'office':
+                    new_office_object = Office(queried_room.room_name)
+                    new_office_object.room_type = queried_room.room_type
+                    new_office_object.number_of_occupants = queried_room.number_of_occupants
+                    new_office_object.capacity = queried_room.capacity
+                    if queried_room.has_free_space == 0:
+                        new_office_object.has_free_space = False
+                    if queried_room.has_free_space == 1:
+                        new_office_object.has_free_space = True
+                    self.office_spaces[queried_room.room_name] = new_office_object
+                    self.all_rooms[queried_room.room_name] = new_office_object
+                    self.number_of_offices += 1
+                if queried_room.room_type.lower() == 'living space':
+                    new_living_space_object = LivingSpace(queried_room.room_name)
+                    new_living_space_object.room_type = queried_room.room_type
+                    new_living_space_object.number_of_occupants = queried_room.number_of_occupants
+                    new_living_space_object.capacity = queried_room.capacity
+                    if queried_room.has_free_space == 0:
+                        new_living_space_object.has_free_space = False
+                    if queried_room.has_free_space == 1:
+                        new_living_space_object.has_free_space = True
+                    self.living_spaces[queried_room.room_name] = new_living_space_object
+                    self.all_rooms[queried_room.room_name] = new_living_space_object
+                    self.number_of_living_spaces += 1
+                self.total_number_of_rooms += 1
+            queried_fellows = FellowModel.select()
+            for queried_fellow in queried_fellows:
+                new_fellow_object = Fellow(queried_fellow.person_name)
+                new_fellow_object.living_space_assigned = queried_fellow.living_space_assigned
+                new_fellow_object.office_assigned = queried_fellow.office_assigned
+                try:
+                    self.all_rooms[queried_fellow.office_assigned].occupants.append(queried_fellow.person_name)
+                except KeyError:
+                    pass
+                try:
+                    self.all_rooms[queried_fellow.living_space_assigned].occupants.append(queried_fellow.person_name)
+                except KeyError:
+                    pass
+                new_fellow_object.position = 'Fellow'
+                self.list_of_fellows[queried_fellow.person_name] = new_fellow_object
+                self.list_of_people[queried_fellow.person_name] = new_fellow_object
+                self.total_number_of_fellows += 1
+                self.total_number_of_people += 1
+            queried_staffers = StaffModel.select()
+            for queried_staffer in queried_staffers:
+                new_staffer_object = Staff(queried_staffer.person_name)
+                new_staffer_object.position = queried_staffer.person_position
+                new_staffer_object.office_assigned = queried_staffer.office_assigned
+                try:
+                    self.all_rooms[queried_staffer.office_assigned].occupants.append(queried_staffer.person_name)
+                except KeyError:
+                    pass
+                self.list_of_staff[queried_staffer.person_name] = new_staffer_object
+                self.list_of_people[queried_staffer.person_name] = new_staffer_object
+                self.total_number_of_staff += 1
+                self.total_number_of_people += 1
+
+            db.close()
+            return ' Loaded state successfully'
+        except OperationalError:
+            return " A database called {} does not exist!".format(db_name)

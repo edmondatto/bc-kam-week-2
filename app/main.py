@@ -17,8 +17,8 @@ Usage:
     dojo print_unallocated [<print_unallocated>]
     dojo reallocate_room <first_name> <last_name> <new_room_name>
     dojo load_people
-    dojo save_state
-    dojo load_state
+    dojo save_state [<--db=sqlite_database>]
+    dojo load_state <sqlite_database>
     dojo (-h | --help | --version)
 Options:
     -i, --interactive  Interactive Mode
@@ -139,14 +139,19 @@ class AndelaDojo(cmd.Cmd):
 
     @docopt_cmd
     def do_save_state(self, arg):
-        """Usage: save_state"""
-        output = the_dojo.save_state()
+        """Usage: save_state [<--db=sqlite_database>]"""
+        database_name = arg['<--db=sqlite_database>']
+        if database_name:
+            output = the_dojo.save_state(database_name)
+        else:
+            output = the_dojo.save_state()
         print(output)
 
     @docopt_cmd
     def do_load_state(self, arg):
-        """Usage: load_state"""
-        output = the_dojo.load_state()
+        """Usage: load_state <sqlite_database>"""
+        database_name = arg['<sqlite_database>']
+        output = the_dojo.load_state(database_name)
         print(output)
 
     def do_quit(self, arg):

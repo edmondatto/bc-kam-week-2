@@ -2,10 +2,16 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/ce741707f6fe46bf9f73065779778368)](https://www.codacy.com/app/edmondatto/bc-kam-week-2?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=edmondatto/bc-kam-week-2&amp;utm_campaign=Badge_Grade)
 
 ## Overview
-This release of the application has five core features via it's command line interface
+This command line application is used to create office and living spaces and manage their random assignment to staff and/or fellows at Andela. 
 
-## Dependencies
+### Dependencies
+* **[coverage==4.3.4](https://coverage.readthedocs.io/)** - A tool for measuring code coverage in Python tests. This measurement is typically used to gauge the effectiveness of tests
 
+* **[docopt==0.6.2](http://docopt.org/)** - A tool that helps you define the interface for your command-line app, and automatically generate a parser for it.
+
+* **[peewee==2.10.1](docs.peewee-orm.com/)** - A simple ORM that manages all the aspects of saving and loading the application's data
+
+## Use cases
 
 ### Create room
 ```
@@ -137,4 +143,40 @@ UNALLOCATED
 Wolverine, Storm, Professor X
 
 The list of Unallocated people has been written to the file unallocated.txt
+```
+
+### Load people
+This command takes no arguments and creates people loaded from a text file and automatically assigns them rooms and/or office spaces respectively.
+```
+USAGE: load_people
+```
+```
+INPUT: load_people
+```
+```
+OUTPUT: People have been loaded successfully from the file
+```
+
+### Save state
+This function persists all the data stored in the app to a SQLite database. Specifying the ​--db​ parameter explicitly stores the data in the sqlite_database​ specified.
+```
+USAGE: save_state [--db=sqlite_database]
+```
+```
+INPUT: save_state
+```
+```
+OUTPUT: Saved state successfully
+```
+
+### Load state
+Loads data from a specified database into the application.
+```
+USAGE: load_state <sqlite_database>
+```
+```
+INPUT: load_state dojo.db
+```
+```
+OUTPUT: Loaded state successfully
 ```
