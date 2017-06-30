@@ -1,7 +1,8 @@
 asciinema==1.4.0
+codacy-coverage==1.3.6
 codeclimate-test-reporter==0.2.1
 coverage==4.3.4
 docopt==0.6.2
--e git+https://github.com/edmondatto/bc-kam-week-2.git@1449a43935f9b6ff40c88347c8d6820eeeee10b8#egg=dojo
+-e git+https://github.com/edmondatto/bc-kam-week-2.git@c8945d7dbc181113d004121e0650dc5b0d95636e#egg=dojo
 peewee==2.10.1
 requests==2.13.0
