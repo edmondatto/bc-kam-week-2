@@ -134,7 +134,7 @@ class AndelaDojo(cmd.Cmd):
     @docopt_cmd
     def do_load_people(self, arg):
         """Usage: load_people"""
-        output = the_dojo.load_people()
+        output = the_dojo.load_people('Imports/load_file')
         print(output)
 
     @docopt_cmd

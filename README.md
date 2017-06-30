@@ -4,6 +4,13 @@
 ## Overview
 This command line application is used to create office and living spaces and manage their random assignment to staff and/or fellows at Andela. 
 
+### Installation
+```
+$ git clone https://www.github.com/edmondatto/bc-kam-week-2.git
+$ pip install -r requiremnts.txt
+```
+To start the app, run the command `dojo`
+
 ### Dependencies
 * **[coverage==4.3.4](https://coverage.readthedocs.io/)** - A tool for measuring code coverage in Python tests. This measurement is typically used to gauge the effectiveness of tests
 

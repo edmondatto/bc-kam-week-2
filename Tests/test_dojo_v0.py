@@ -1,3 +1,4 @@
+import os
 from unittest import TestCase
 
 from app.dojo import Dojo
@@ -147,7 +148,7 @@ class TestDojoClass(TestCase):
     def test_print_allocations(self):
         self.assertIn('No rooms have been created yet!', self.my_dojo.print_allocations())
         self.my_dojo.create_room('main', 'office')
-        self.my_dojo.add_person('Unallocated guy', 'staff')
+        self.my_dojo.add_person('Allocated guy', 'staff')
         self.assertIsNone(self.my_dojo.print_allocations())
 
     def test_successfully_removes_person_from_room(self):
@@ -160,10 +161,109 @@ class TestDojoClass(TestCase):
         self.assertEqual(wrong_attempt,
                          'King Kong has not been assigned to the room Krypton, or, the room Krypton is invalid ')
 
-    def test_succesfully_load_people_from_file(self):
+    def test_successfully_load_people_from_file(self):
+        THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+        my_data_path = os.path.join(THIS_DIR, os.pardir, 'Imports/load_file')
         self.my_dojo.create_room('main', 'office')
         self.my_dojo.create_room('penthouse', 'living space')
-        self.my_dojo.load_people()
+        self.my_dojo.load_people(my_data_path)
         self.assertIn('OLUWAFEMI SULE', self.my_dojo.list_of_people, msg='File did not load successfully')
         self.assertIn('DOMINIC WALTERS', self.my_dojo.list_of_staff, msg='File did not load successfully')
         self.assertEqual(8, self.my_dojo.total_number_of_people, msg='Wrong number of people loaded')
+
+    def test_save_state(self):
+        self.my_dojo.create_room('mordor', 'office')
+        self.my_dojo.create_room('penthouse', 'living space')
+        self.my_dojo.create_room('main', 'office')
+        self.my_dojo.create_room('cozy space', 'living space')
+        self.my_dojo.add_person('the flash', 'fellow', True)
+        self.my_dojo.add_person('arrow', 'fellow', True)
+        self.my_dojo.add_person('aquaman', 'fellow', True)
+        self.my_dojo.add_person('joker', 'fellow', True)
+        self.assertEqual(self.my_dojo.save_state(), ' Saved state successfully', msg='State not saved successfully')
+
+    def test_load_state(self):
+        self.my_dojo.add_person('inferno', 'staff')
+        self.my_dojo.add_person('supergirl', 'fellow', True)
+        self.my_dojo.create_room('mordor', 'office')
+        self.my_dojo.create_room('penthouse', 'living space')
+        self.my_dojo.create_room('main', 'office')
+        self.my_dojo.create_room('cozy space', 'living space')
+        self.my_dojo.add_person('the flash', 'fellow', True)
+        self.my_dojo.add_person('arrow', 'fellow', True)
+        self.my_dojo.add_person('aquaman', 'staff')
+        self.my_dojo.add_person('joker', 'staff')
+        self.assertEqual(self.my_dojo.save_state(), ' Saved state successfully', msg='State not saved successfully')
+        self.assertEqual(self.my_dojo.load_state('dojo.db'), ' Loaded state successfully')
+        self.assertEqual(self.my_dojo.load_state('strange_one.db'), ' A database called strange_one.db does not exist!')
+
+    def test_successfully_reallocate_office(self):
+        self.my_dojo.create_room('mordor', 'office')
+        self.my_dojo.add_person('john mayer', 'staff')
+        initial_number_of_mordor_occupants = len(self.my_dojo.all_rooms['mordor'].occupants)
+        self.my_dojo.create_room('oculus', 'office')
+        initial_number_of_oculus_occupants = len(self.my_dojo.all_rooms['oculus'].occupants)
+        self.my_dojo.reallocate_person('john mayer', 'oculus')
+        final_number_of_mordor_occupants = len(self.my_dojo.all_rooms['mordor'].occupants)
+        final_number_of_oculus_occupants = len(self.my_dojo.all_rooms['oculus'].occupants)
+        self.assertEqual(1, initial_number_of_mordor_occupants - final_number_of_mordor_occupants)
+        self.assertEqual(1, final_number_of_oculus_occupants - initial_number_of_oculus_occupants)
+        self.assertIn(' john mayer has successfully been reallocated to the room oculus.',
+                      self.my_dojo.reallocate_person('john mayer', 'oculus'),
+                      msg='john mayer not reallocated successfully')
+
+    def test_successfully_reallocate_living_space(self):
+        self.my_dojo.create_room('mordor', 'living space')
+        self.my_dojo.add_person('john mayer', 'fellow', True)
+        initial_number_of_mordor_occupants = len(self.my_dojo.all_rooms['mordor'].occupants)
+        self.my_dojo.create_room('oculus', 'living space')
+        initial_number_of_oculus_occupants = len(self.my_dojo.all_rooms['oculus'].occupants)
+        self.my_dojo.reallocate_person('john mayer', 'oculus')
+        final_number_of_mordor_occupants = len(self.my_dojo.all_rooms['mordor'].occupants)
+        final_number_of_oculus_occupants = len(self.my_dojo.all_rooms['oculus'].occupants)
+        self.assertEqual(1, initial_number_of_mordor_occupants - final_number_of_mordor_occupants)
+        self.assertEqual(1, final_number_of_oculus_occupants - initial_number_of_oculus_occupants)
+        self.assertIn(' john mayer has successfully been reallocated to the room oculus.',
+                      self.my_dojo.reallocate_person('john mayer', 'oculus'),
+                      msg='john mayer not reallocated successfully')
+
+    def test_reallocate_room_rejects_non_existent_room(self):
+        self.my_dojo.create_room('mordor', 'office')
+        self.my_dojo.add_person('john mayer', 'staff')
+        self.assertIn(' A room called oculus does not exist in the dojo',
+                      self.my_dojo.reallocate_person('john mayer', 'oculus'))
+
+    def test_rejects_reallocate_staff_to_living_space(self):
+        self.my_dojo.create_room('mordor', 'office')
+        self.my_dojo.create_room('penthouse', 'living space')
+        self.my_dojo.add_person('john mayer', 'staff')
+        self.assertIn('Staff members cannot be allocated living spaces!',
+                      self.my_dojo.reallocate_person('john mayer', 'penthouse'))
+
+    def test_cannot_reallocate_to_full_living_space(self):
+        self.my_dojo.create_room('penthouse', 'living space')
+        self.my_dojo.add_person('the flash', 'fellow', True)
+        self.my_dojo.add_person('arrow', 'fellow', True)
+        self.my_dojo.add_person('aquaman', 'fellow', True)
+        self.my_dojo.add_person('joker', 'fellow', True)
+        self.my_dojo.create_room('mordor', 'living space')
+        self.my_dojo.add_person('john mayer', 'fellow', True)
+        self.assertIn('penthouse does not have any free space!',
+                      self.my_dojo.reallocate_person('john mayer', 'penthouse'))
+
+    def test_cannot_reallocate_to_full_office(self):
+        self.my_dojo.create_room('penthouse', 'office')
+        self.my_dojo.add_person('the flash', 'staff')
+        self.my_dojo.add_person('arrow', 'staff')
+        self.my_dojo.add_person('aquaman', 'staff')
+        self.my_dojo.add_person('joker', 'staff')
+        self.my_dojo.add_person('deadshot', 'staff')
+        self.my_dojo.add_person('harley quinn', 'staff')
+        self.my_dojo.create_room('mordor', 'office')
+        self.my_dojo.add_person('john mayer', 'staff')
+        self.assertIn('penthouse does not have any free space!',
+                      self.my_dojo.reallocate_person('john mayer', 'penthouse'))
+
+    def test_reallocate_room_rejects_non_existent_person(self):
+        self.assertIn('A person called john mayer does not exist in the dojo!',
+                      self.my_dojo.reallocate_person('john mayer', 'penthouse'))

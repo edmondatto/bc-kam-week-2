@@ -212,28 +212,34 @@ class Dojo(object):
         if person_name in list(self.list_of_people.keys()):
             if new_room_name in list(self.all_rooms.keys()):
                 new_room = self.all_rooms[new_room_name]
-                old_room = self.list_of_people[person_name].office_assigned
+                old_office = self.list_of_people[person_name].office_assigned
+                try:
+                    old_living_space = self.list_of_people[person_name].living_space_assigned
+                except AttributeError:
+                    pass
                 if new_room.room_type.lower() == 'office':
-                    if new_room.room_type == self.all_rooms[old_room].room_type:
-                        self.remove_person(person_name, old_room)
+                    if new_room.room_type == self.all_rooms[old_office].room_type:
+                        self.remove_person(person_name, old_office)
                         if new_room.has_free_space:
                             new_room.occupants.append(person_name)
                             new_room.number_of_occupants += 1
                             self.list_of_people[person_name].office_assigned = new_room_name
-                            return ' {} has successfully been reallocated to the rooom {}.\n'.format(person_name,
-                                                                                                     new_room_name)
+                            return ' {} has successfully been reallocated to the room {}.\n'.format(person_name,
+                                                                                                    new_room_name)
                         else:
                             return ' {} does not have any free space!\n'.format(new_room_name)
                     else:
                         return ' You cannot reallocate a person to a room of a different type!\n'
                 if new_room.room_type.lower() == 'living space':
-                    if self.list_of_people[person_name].position == 'fellow':
-                        if new_room.room_type == self.all_rooms[old_room].room_type:
-                            self.remove_person(person_name, old_room)
+                    if self.list_of_people[person_name].position.lower() == 'fellow':
+                        if new_room.room_type == self.all_rooms[old_living_space].room_type:
+                            self.remove_person(person_name, old_living_space)
                             if new_room.has_free_space:
                                 new_room.occupants.append(person_name)
                                 new_room.number_of_occupants += 1
                                 self.list_of_people[person_name].living_space_assigned = new_room_name
+                                return ' {} has successfully been reallocated to the room {}.\n'.format(person_name,
+                                                                                                        new_room_name)
                             else:
                                 return ' {} does not have any free space!\n'.format(new_room_name)
                         else:
@@ -245,9 +251,9 @@ class Dojo(object):
         else:
             return ' A person called {} does not exist in the dojo!\n'.format(person_name)
 
-    def load_people(self):
+    def load_people(self, file_path):
         """A function that adds people to rooms from a txt file"""
-        load_file = open('Imports/load_file', 'r')
+        load_file = open(file_path, 'r')
         people_list = [x.strip('\n') for x in load_file.readlines()]
         for person in people_list:
             if person.split(' ')[2].lower() == 'staff':
@@ -295,6 +301,7 @@ class Dojo(object):
         return " Saved state successfully"
 
     def load_state(self, db_name):
+        """A function that loads the application's data from a (specified) database"""
         try:
             db.init(db_name)
             queried_rooms = RoomModel.select()
